@@ -48,7 +48,7 @@ import Error from "./Error";
 import sign from "jwt-encode";
 
 
-export default function GameImage() {
+export default function GameImage({ updateLeaderboard }) {
   const containerRef = useRef(null);
 
   const intervalRef = useRef(null);
@@ -319,7 +319,10 @@ const transactionSignature = await connection.sendRawTransaction(
 
 
         const handleSendData = async () => {
-
+          console.log('randPunches:', randPunches);
+          console.log('wif:', wif);
+          console.log('referredBy:', referredBy);
+        
           const data = {
             wallet_address: wallet.publicKey.toString(),
             punches: randPunches,
@@ -336,7 +339,7 @@ const transactionSignature = await connection.sendRawTransaction(
             win: 1 // Set to 1 if the user won
           };
           try {
-            const finishResponse = await fetch('/api/finish', {
+            const finishResponse = await fetch('http://localhost:5000/api/finish', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json'
@@ -359,7 +362,7 @@ const transactionSignature = await connection.sendRawTransaction(
 
         const sendData = async (userData) => {
           try {
-            const response = await fetch('/api/wallet', {
+            const response = await fetch('http://localhost:5000/api/wallet', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json'
@@ -383,13 +386,15 @@ const transactionSignature = await connection.sendRawTransaction(
 
         const getLeaderboardData = async () => {
           try {
-            const leaderboardResponse = await fetch('/api/leaderboard');
+            const leaderboardResponse = await fetch('http://localhost:5000/api/leaderboard');
             if (!leaderboardResponse.ok) {
               throw new Error('Failed to fetch leaderboard data');
             }
             const leaderboardData = await leaderboardResponse.json();
             console.log('Leaderboard Data:', leaderboardData);
             // Perform calculations for top 10 players based on the received data
+            
+            updateLeaderboard(leaderboardData);
           } catch (error) {
             console.error('Error fetching leaderboard data:', error);
           }

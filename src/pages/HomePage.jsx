@@ -42,20 +42,38 @@ import loseImage_cook from "../assets/lose_cook.png";
 import { Context } from "../App";
 function HomePage() {
   const {wifAmount, setWifAmount, player, setPlayer} = useContext(Context);
-  const [leaderboard, setLeaderboard] = useState([
-    { name: "Player One", score: 50 },
-    { name: "Player Two", score: 45 },
-    { name: "Player Three", score: 30 },
-  ]);
+  const [leaderboard, setLeaderboard] = useState([]);
+    // { name: "Player One", score: 50 },
+    // { name: "Player Two", score: 45 },
+    // { name: "Player Three", score: 30 },
+  // ]);
   const wallet = useWallet();
   const shortenAddress = (address) => {
     return `${address.slice(0, 4)}...${address.slice(-4)}`;
   };
+  const updateLeaderboard = (data) => {
+    setLeaderboard(data);
+  };
+  const fetchInitialLeaderboard = async () => {
+    try {
+      const leaderboardResponse = await fetch('http://localhost:5000/api/leaderboard');
+      if (!leaderboardResponse.ok) {
+        throw new Error('Failed to fetch leaderboard data');
+      }
+      const leaderboardData = await leaderboardResponse.json();
+      setLeaderboard(leaderboardData);
+    } catch (error) {
+      console.error('Error fetching leaderboard data:', error);
+    }
+  };
+  useEffect(() => {
+    fetchInitialLeaderboard();
+  }, []);
   return (
     <>
       {/* <GameOverPopup isOpen={isOpen} onClose={closePopUp} image={tweetImage} link={SNSlink} /> */}
       
-      <GameImage/>
+      <GameImage updateLeaderboard={updateLeaderboard}/>
       <h1 className="custom-heading text-[61px] text-[#2196F3]">
         Ansem vs. Kook
       </h1>
@@ -69,6 +87,8 @@ function HomePage() {
           <p>Wallet not connected</p>
         )}
       </div>
+      {/* <GameImage updateLeaderboard={updateLeaderboard} /> */}
+
       <Leaderboard leaderboard={leaderboard} />
     </>
   );

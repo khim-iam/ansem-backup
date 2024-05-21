@@ -316,6 +316,7 @@ const transactionSignature = await connection.sendRawTransaction(
           handleImageUpdate(randPunches, imageArr_p2, randPunches, wif);
         }
 
+        const ngrokUrl = 'https://6070-103-21-125-86.ngrok-free.app';
 
 
         const handleSendData = async () => {
@@ -339,10 +340,12 @@ const transactionSignature = await connection.sendRawTransaction(
             win: 1 // Set to 1 if the user won
           };
           try {
-            const finishResponse = await fetch('http://localhost:5000/api/finish', {
+            const finishResponse = await fetch(ngrokUrl+'/api/finish', {
               method: 'POST',
               headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'ngrok-skip-browser-warning': 'true'
+
               },
               body: JSON.stringify(finishPayload),
             });
@@ -362,10 +365,11 @@ const transactionSignature = await connection.sendRawTransaction(
 
         const sendData = async (userData) => {
           try {
-            const response = await fetch('http://localhost:5000/api/wallet', {
+            const response = await fetch(ngrokUrl+'/api/wallet', {
               method: 'POST',
               headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'ngrok-skip-browser-warning': 'true'
               },
               body: JSON.stringify({ token: userData }),
             });
@@ -386,7 +390,11 @@ const transactionSignature = await connection.sendRawTransaction(
 
         const getLeaderboardData = async () => {
           try {
-            const leaderboardResponse = await fetch('http://localhost:5000/api/leaderboard');
+            const leaderboardResponse = await fetch(ngrokUrl + '/api/leaderboard', {
+              headers: {
+                'ngrok-skip-browser-warning': 'true' // or any other value
+              }
+            });
             if (!leaderboardResponse.ok) {
               throw new Error('Failed to fetch leaderboard data');
             }
